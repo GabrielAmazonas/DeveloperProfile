@@ -15,21 +15,35 @@ class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
 
-        fun callApi(url: String) {
+    }
+
+    @Test
+    fun testApiCall() {
+        fun callApi(url: String): String? {
             val client = OkHttpClient()
             val request = Request.Builder().url(url).build()
-
+            var result = ""
+            fun populateResult(content: String) {
+                result = content
+            }
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call?, e: IOException?) {
+                    result = ""
                 }
 
                 override fun onResponse(call: Call?, response: Response) {
-                    println(response.body()?.string())
+
+                    result = (response.body()?.string()!!)
+                    populateResult(result)
                 }
             })
+
+            return result
         }
 
-        callApi("https://api.github.com/users/GabrielAmazonas")
-        assertEquals(4, 2 + 2)
+
+
+        val result = callApi("https://api.github.com/users/octocat")
+        assertEquals(false, result.isNullOrBlank())
     }
 }
